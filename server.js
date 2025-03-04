@@ -1,7 +1,7 @@
-require('dotenv').config();
-const express = require('express');
-const { Pool } = require('pg');  // PostgreSQL 用のライブラリ
-const axios = require('axios');
+require("dotenv").config();
+const express = require("express");
+const { Pool } = require("pg"); // PostgreSQL 用のライブラリ
+const axios = require("axios");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,14 +18,16 @@ const pool = new Pool({
 });
 
 // 画像分類 API のエンドポイント
-const AI_API_URL = 'http://example.com/';
+const AI_API_URL = "http://example.com/";
 
 // 画像分類のリクエストとデータ保存のエンドポイント
-app.post('/classify', async (req, res) => {
+app.post("/classify", async (req, res) => {
   const { image_path } = req.body;
 
   if (!image_path) {
-    return res.status(400).json({ success: false, message: 'image_path is required' });
+    return res
+      .status(400)
+      .json({ success: false, message: "image_path is required" });
   }
 
   try {
@@ -35,10 +37,10 @@ app.post('/classify', async (req, res) => {
 
     // 成功・失敗の判定
     const success = result.success ? 1 : 0;
-    const message = result.message || 'Unknown error';
+    const message = result.message || "Unknown error";
     const classId = result.estimated_data?.class || null;
     const confidence = result.estimated_data?.confidence || null;
-    
+
     // 現在のタイムスタンプ取得
     const requestTimestamp = new Date();
     const responseTimestamp = new Date();
@@ -49,12 +51,20 @@ app.post('/classify', async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6, $7)
     `;
 
-    await pool.query(query, [image_path, success, message, classId, confidence, requestTimestamp, responseTimestamp]);
+    await pool.query(query, [
+      image_path,
+      success,
+      message,
+      classId,
+      confidence,
+      requestTimestamp,
+      responseTimestamp,
+    ]);
 
-    res.json({ success: true, message: 'Data saved', data: result });
+    res.json({ success: true, message: "Data saved", data: result });
   } catch (error) {
-    console.error('Error:', error.message);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
 
