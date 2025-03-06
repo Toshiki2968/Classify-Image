@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 app.use(express.json()); // JSON パース用ミドルウェア
 
 // 画像分類 API のエンドポイント
-const AI_API_URL = "http://example.com/";
+const AI_API_URL = process.env.AI_API_URL;
 
 // 画像分類のリクエストとデータ保存のエンドポイント
 app.post("/classify", async (req, res) => {
