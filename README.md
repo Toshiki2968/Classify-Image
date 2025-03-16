@@ -36,8 +36,13 @@ DATABASE_URL="postgresql://{user-name}:{password}@localhost:{port}/{db-name}?sch
 ```bash
 npx prisma migrate deploy
 ```
+## 5. サーバーの起動方法
+サーバーを起動するには、以下のコマンドを実行します。
+```bash
+npm start
+```
 
-## 5. API リクエスト例
+## 6. API リクエスト例
 
 以下のように curl を使って画像を分類するリクエストを送信します。
 
@@ -45,7 +50,7 @@ npx prisma migrate deploy
 curl -X POST http://localhost:3000/classify -H "Content-Type: application/json"  -d '{"image_path": "test_image.jpg"}'
 ```
 
-## 6. 出力例
+## 7. 出力例
 
 リクエストが成功した場合の出力例は以下の通りです。
 
@@ -72,7 +77,7 @@ image_path を指定しなかった場合の出力例は以下の通りです。
 { "success": false, "message": "image_path is required" }
 ```
 
-## 7. AiAnalysisLog テーブル
+## 8. AiAnalysisLog テーブル
 
 AiAnalysisLog テーブルのスキーマは以下の通りです：
 | 列名 | タイプ | 制約 |
