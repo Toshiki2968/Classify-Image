@@ -7,32 +7,33 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const prisma = new PrismaClient();
 
-app.use(express.json()); // JSON パース用ミドルウェア
+// リクエストボディの解析
+app.use(express.json());
 
 // 画像分類 API のエンドポイント
 const AI_API_URL = process.env.AI_API_URL;
 
-// 画像分類のリクエストとデータ保存のエンドポイント
 app.post("/classify", async (req, res) => {
   const { image_path } = req.body;
 
+  // 画像ファイルPathがなければエラーを返す
   if (!image_path) {
-    return res.status(400).json({ success: false, message: "image_path is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "image_path is required" });
   }
 
   try {
-    // AI API にリクエスト送信
+    // 画像分類 API にリクエスト送信
     const response = await axios.post(AI_API_URL, { image_path });
     const result = response.data;
 
-    // 成功・失敗の判定
     const success = result.success;
     const message = result.message || "Unknown error";
     const classId = result.estimated_data?.class || null;
     const confidence = result.estimated_data?.confidence || null;
 
-    // データベースに保存
-    const logEntry = await prisma.aiAnalysisLog.create({
+    const aiAnalysisLog = await prisma.aiAnalysisLog.create({
       data: {
         imagePath: image_path,
         success: success,
@@ -44,7 +45,7 @@ app.post("/classify", async (req, res) => {
       },
     });
 
-    res.json({ success: true, message: "Data saved", data: logEntry });
+    res.json({ success: true, message: "Data saved", data: aiAnalysisLog });
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -53,5 +54,5 @@ app.post("/classify", async (req, res) => {
 
 // サーバー起動
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`API running on http://localhost:${PORT}`);
 });
